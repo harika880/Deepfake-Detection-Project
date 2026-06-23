@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="DeepGuard — AI-powered deepfake detection using Vision Transformer." />
+  <title>DeepGuard — Deepfake Detection</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" />
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html,body{width:100%;min-height:100%;font-family:'Inter',system-ui,sans-serif}
+  </style>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Background orbs -->
+  <div class="bg-orbs" aria-hidden="true">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <!-- ══════════════════════════════
+       LOGIN PAGE
+  ══════════════════════════════ -->
+  <div id="login-page" class="login-page">
+    <div class="login-card">
+      <div class="login-logo">
+        <div class="login-logo-icon">🛡️</div>
+        <div>
+          <div class="login-logo-text">Deep<span class="grad-text">Guard</span></div>
+          <div class="login-logo-sub">Powered by Vision Transformer (ViT)</div>
+        </div>
+      </div>
+      <h1 class="login-heading">Welcome Back</h1>
+      <p class="login-subheading"></p>
+      <div class="login-field">
+        <label class="login-label" for="username-input">Your Name</label>
+        <div class="login-input-wrap">
+          <span class="login-input-icon">👤</span>
+          <input id="username-input" type="text" class="login-input"
+            placeholder="e.g. Alex, Priya, Jordan..."
+            maxlength="32" autocomplete="off" spellcheck="false" />
+        </div>
+        <p class="login-hint"></p>
+      </div>
+      <button id="login-btn" class="login-btn">
+        <span class="login-btn-text">Enter DeepGuard</span>
+        <span class="login-btn-arrow">→</span>
+      </button>
+      <div class="login-features">
+        <div class="login-feat"><span>⚡</span><span>Instant Detection</span></div>
+        
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════
+       APP SHELL
+  ══════════════════════════════ -->
+  <div id="app" class="app hidden">
+
+    <!-- HEADER -->
+    <header class="header">
+      <div class="header-left">
+        <button id="sidebar-toggle" class="hamburger" aria-label="Toggle sidebar">
+          <span></span><span></span><span></span>
+        </button>
+        <div class="logo">
+          <span class="logo-icon">🛡️</span>
+          <span class="logo-text">Deep<span class="grad-text">Guard</span></span>
+        </div>
+        <span class="header-badge">ViT Model</span>
+      </div>
+      <div class="header-right">
+        <div class="user-pill">
+          <div class="user-avatar" id="user-avatar">A</div>
+          <span id="user-name-label">User</span>
+        </div>
+        <button id="logout-btn" class="btn-logout">↩ Logout</button>
+      </div>
+    </header>
+
+    <!-- LAYOUT -->
+    <div class="content-area">
+
+      <!-- ── SIDEBAR ── -->
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-inner">
+
+        
+
+          <!-- DASHBOARD NAV -->
+          <button class="sb-nav-btn active" id="tab-dashboard">
+            <span class="sb-nav-icon">📊</span>
+            <span class="sb-nav-label">Dashboard</span>
+            <span class="sb-nav-arrow" id="arrow-dashboard">▾</span>
+          </button>
+
+          
+
+          <!-- HISTORY NAV — opens full page -->
+          <button class="sb-nav-btn" id="tab-history">
+            <span class="sb-nav-icon">📋</span>
+            <span class="sb-nav-label">History</span>
+            <span class="sb-nav-arrow">→</span>
+          </button>
+
+        </div>
+      </aside>
+
+      <!-- Mobile sidebar overlay -->
+      <div class="sb-overlay hidden" id="sb-overlay"></div>
+
+      <!-- ── MAIN DETECT PAGE ── -->
+      <main class="main" id="main-detect">
+
+        <div class="hero">
+          <h2 class="hero-title">Detect <span class="grad-text">Deepfakes</span><br>Instantly</h2>
+          <p class="hero-sub">Upload a face image — our AI will tell you if it's <strong>Real</strong> or <strong>Fake</strong> in seconds</p>
+        </div>
+
+        <div class="cards-row">
+
+          <!-- Upload Card -->
+          <div class="card">
+            <div class="card-header">
+              <span class="card-icon">📤</span>
+              <h3 class="card-title">Upload Image</h3>
+            </div>
+            <div id="drop-zone" class="drop-zone" role="button" tabindex="0">
+              <div class="dz-icon">📁</div>
+              <div class="dz-text">Drag &amp; drop a face image<br><span class="dz-sub">or click to browse</span></div>
+              <input type="file" id="file-input" accept="image/jpeg,image/png,image/webp" class="hidden-file" />
+            </div>
+            <div id="preview-wrap" class="preview-wrap hidden">
+              <img id="preview-img" src="" alt="Preview" class="preview-img" />
+              <button id="clear-img-btn" class="btn-remove">✕ Remove</button>
+            </div>
+            <div id="file-info" class="file-info hidden"></div>
+            <button id="detect-btn" class="btn-detect" disabled>
+              <span class="detect-text">🔍 Detect</span>
+              <span class="detect-spinner hidden"></span>
+            </button>
+          </div>
+
+          <!-- Result Card -->
+          <div class="card result-card" id="result-card">
+            <div id="result-placeholder" class="result-ph">
+              <div class="result-ph-icon">🔮</div>
+              <p>Results appear here after detection</p>
+            </div>
+            <div id="result-body" class="result-body hidden">
+              <div id="result-badge" class="result-badge"></div>
+              <h3 id="result-label" class="result-label"></h3>
+              <p id="result-desc" class="result-desc"></p>
+              <div id="reason-block" class="reason-block hidden">
+                <div class="reason-hd">Explanation</div>
+                <div id="result-reason" class="reason-text"></div>
+              </div>
+              <div class="conf-section">
+                <div class="conf-row">
+                  <span class="conf-title">Confidence</span>
+                  <span id="conf-pct" class="conf-pct"></span>
+                </div>
+                <div class="conf-track">
+                  <div id="conf-bar" class="conf-bar"></div>
+                </div>
+              </div>
+              <div class="meta-row">
+                <div class="meta-item">
+                  <span class="meta-lbl">Model</span>
+                  <span id="meta-model" class="meta-val">—</span>
+                </div>
+                <div class="meta-item">
+                  <span class="meta-lbl">Decision</span>
+                  <span id="meta-decision" class="meta-val">—</span>
+                </div>
+              </div>
+              <button id="again-btn" class="btn-again">🔄 Analyze Another</button>
+            </div>
+          </div>
+        </div>
+
+      </main><!-- end main-detect -->
+
+      <!-- ══════════════════════════════
+           HISTORY FULL PAGE
+      ══════════════════════════════ -->
+      <div class="hist-page hidden" id="hist-page">
+
+        <!-- History page header -->
+        <div class="hp-header">
+          <button class="hp-back-btn" id="hp-back-btn">← Back</button>
+          <div class="hp-title-wrap">
+            <h2 class="hp-title">📋 Detection History</h2>
+            <p class="hp-subtitle" id="hp-subtitle">All scans for this session</p>
+          </div>
+          <button class="hp-clear-btn" id="hp-clear-btn">🗑️ Clear All</button>
+        </div>
+
+        <!-- Filter bar -->
+        <div class="hp-filters">
+          <button class="hp-filter active" data-filter="all">All</button>
+          <button class="hp-filter" data-filter="Real">✅ Real</button>
+          <button class="hp-filter" data-filter="Fake">🚨 Fake</button>
+          <button class="hp-filter" data-filter="Uncertain">⚠️ Uncertain</button>
+        </div>
+
+        <!-- Grid of history cards -->
+        <div class="hp-grid" id="hp-grid">
+          <div class="hp-empty" id="hp-empty">
+            <div class="hp-empty-icon">📭</div>
+            <h3>No history yet</h3>
+            <p>Go back and scan an image to see results here</p>
+            <button class="hp-go-detect" id="hp-go-detect">🔍 Start Detecting</button>
+          </div>
+        </div>
+
+      </div><!-- end hist-page -->
+
+    </div><!-- end content-area -->
+  </div><!-- end app -->
+
+  <!-- Toast -->
+  <div id="toast" class="toast" role="alert"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

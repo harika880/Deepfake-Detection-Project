@@ -1,0 +1,31 @@
+import sys
+import os
+from fastapi import FastAPI, UploadFile
+import shutil
+
+# 🔥 Fix path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from models.predict import predict_image
+from fastapi.middleware.cors import CORSMiddleware
+
+app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+@app.post("/predict")
+async def predict(file: UploadFile):
+    file_path = f"temp_{file.filename}"
+
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+
+    result = predict_image(file_path)
+
+    return result
