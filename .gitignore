@@ -1,20 +1,3 @@
-# ── DeepGuard Project ──────────────────────────────────────────────────────────
-# Trained model weights (too large for GitHub – use Git LFS or share separately)
-*.h5
-*.hdf5
-*.pt
-*.pth
-*.ckpt
-*.pb
-
-# Temp uploaded images saved by the backend
-temp_*
-
-# Data folders
-data/
-datasets/
-
-# ── Python ─────────────────────────────────────────────────────────────────────
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
