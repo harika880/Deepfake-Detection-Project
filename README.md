@@ -6,7 +6,7 @@ We use a combination of Convolutional Neural Networks (CNN) and Vision Transform
 
 ---
 
-## 🎯 Objective
+## 🎯 Objectives
 - Detect whether a video/image is **Real or Fake**
 - Identify subtle inconsistencies in facial features
 - Build an automated deepfake detection system
